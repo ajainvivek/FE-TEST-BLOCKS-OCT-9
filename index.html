@@ -14,11 +14,116 @@
     As a bonus: Use only pure Javascript (no jQuery etc.).
     -->
     <script>
+
+        /**
+        * Generates random color
+        *
+        * @returns: {String} color - random color
+        **/
+        var  getRandomColor = function () {
+          var letters = '0123456789ABCDEF'.split('');
+          var color = '#';
+          for (var i = 0; i < 6; i++ ) {
+              color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+        };
+
+        /**
+        * Destroy the dom after 3 seconds on hover
+        *
+        * @param: {Object} square - square child
+        **/
+        var bindChildEvent = function (square, parent) {
+          var timer = null;
+          //Remove square from parent container if user hover for 3 secs
+          square.addEventListener("mouseover", function () {
+            timer = window.setTimeout(function () {
+              parent.removeChild(square);
+            }, 3000);
+          });
+          //Clear timeout if user moves out of square
+          square.addEventListener("mouseout", function () {
+            window.clearTimeout(timer);
+          });
+        };
+
+        /**
+        * Create Square Containers
+        *
+        * @param: {Number} size - size of the container
+        * @returns: {Object} square - dom referece of square
+        **/
+        var createSquare = function (size, type, parent) {
+          //If invalid type is passed throw execption
+          if (typeof size !== "number") {
+            console.error("Invalid data type passed!");
+            return;
+          }
+
+          var square = document.createElement("div");
+          var randomColor;
+
+          square.style.height = size + "px";
+          square.style.width = size + "px";
+
+          //If child container add additional properties
+          if (type === "child") {
+            randomColor = getRandomColor();
+            square.style.float = "left";
+            square.style.backgroundColor = randomColor;
+            bindChildEvent(square, parent);
+          }
+
+          return square;
+        };
+
+        /**
+        * Constructs container containers and appends to the body along with parent
+        *
+        * @param: {Number} containerSize - size of the container
+        * @param: {Number} childSize - size of the child container
+        * @returns: {Number} accomodateNum - total child parent can accomodate
+        **/
+        var getContainerAccomodateCount = function (containerSize, childSize) {
+          var parentArea = containerSize * containerSize;
+          var childArea = childSize * childSize;
+          return parentArea / childArea;
+        };
+
+        /**
+        * Constructs container containers and appends to the body along with parent
+        *
+        * @param: {Number} containerSize - size of the container
+        * @param: {Number} childSize - size of the child container
+        * @param: {Number} numberOfChildren - number of children
+        **/
+        var constructContainer = function (containerSize, childSize, numberOfChildren) {
+          var parent = createSquare(containerSize, "parent");
+          var body = document.getElementsByTagName("body")[0];
+          var child;
+          var parentAccomodateCount = getContainerAccomodateCount(containerSize, childSize);
+          var childrenCount = numberOfChildren;
+
+          if (numberOfChildren > parentAccomodateCount) {
+            childrenCount = parentAccomodateCount;
+            console.log("Container can only can accomodate " + childrenCount);
+          }
+
+          for (var i = 0; i < childrenCount; i++) {
+            child = createSquare(childSize, "child", parent);
+            parent.appendChild(child);
+          }
+
+          body.appendChild(parent);
+        };
+
         var onLoadCallback = function(containerSize, childSize, numberOfChildren) {
-            
-        }
-        document.addEventListener('DOMContentLoaded', function () {   
-            onLoadCallback(200, 50, 17);
+          constructContainer(containerSize, childSize, numberOfChildren);
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            onLoadCallback(200, 25, 17);
         });
     </script>
 </head>
