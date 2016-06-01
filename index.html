@@ -86,9 +86,13 @@
         * @returns: {Number} accomodateNum - total child parent can accomodate
         **/
         var getContainerAccomodateCount = function (containerSize, childSize) {
-          var parentArea = containerSize * containerSize;
-          var childArea = childSize * childSize;
-          return parentArea / childArea;
+          var size = Math.floor(containerSize / childSize);
+          var accomodate = size * size;
+          //Child cannot be accomodated
+          if (childSize > containerSize) {
+          	return 0;
+          }
+          return accomodate;
         };
 
         /**
